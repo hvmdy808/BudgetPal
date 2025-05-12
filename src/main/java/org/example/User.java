@@ -35,6 +35,11 @@ class User {
         return  this.pass;
     }
 
+    public String getReminderDate(){
+        return this.reminderDate;
+    }
+
+
     public void setName(String name){
         this.name = name;
     }
