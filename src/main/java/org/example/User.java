@@ -18,6 +18,37 @@ class User {
         this.pass = pass;
     }
 
+    // some setters and getters
+    public String getEmail() {
+        return this.email;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getPhone() {
+        return this.phone;
+    }
+
+    public String getPass(){
+        return  this.pass;
+    }
+
+    public void setName(String name){
+        this.name = name;
+    }
+    public void setEmail(String email){
+        this.email = email;
+    }
+    public void setPhone(String phone){
+        this.phone = phone;
+    }
+    public void setPassword(String password){
+        this.pass = password;
+    }
+
+
     public void setReminderDate(String date) {
         this.reminderDate = date;
     }
