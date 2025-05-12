@@ -39,6 +39,10 @@ class User {
         return this.reminderDate;
     }
 
+    public List<Money> getMoneyFlow() {
+        return this.moneyFlow;
+    }
+    
 
     public void setName(String name){
         this.name = name;
