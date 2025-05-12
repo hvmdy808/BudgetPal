@@ -1,23 +1,22 @@
 package org.example;
 
-class Expense implements Money {
-    private String category = "Expense";
-    private double amount;
-    private String type;
-    private String date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-    public Expense(double amount, String type, String date) {
-        this.amount = amount;
+class Expense extends Money {
+    private String type;
+    private LocalDate date;
+
+    public Expense(double amount, String type, LocalDate date) {
+        super("Expense", amount);
         this.type = type;
         this.date = date;
     }
 
-    public String getCategory() { return category; }
-    public double getAmount() { return amount; }
     public String getType() { return type; }
-    public String getDate() { return date; }
+    public LocalDate getDate() { return date; }
 
     public void display() {
-        System.out.println("[Expense] Amount: " + amount + ", Type: " + type + ", Date: " + date);
+        System.out.println("[Expense] Amount: " + getAmount() + ", Type: " + type + ", Date: " + date);
     }
 }

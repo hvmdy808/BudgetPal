@@ -1,20 +1,17 @@
 package org.example;
 
-class Budget implements Money {
-    private String category = "Budget";
-    private double amount;
+class Budget extends Money {
     private String type;
 
     public Budget(double amount, String type) {
-        this.amount = amount;
+        super("Budget", amount);
         this.type = type;
     }
 
-    public String getCategory() { return category; }
-    public double getAmount() { return amount; }
     public String getType() { return type; }
 
+    @Override
     public void display() {
-        System.out.println("[Budget] Amount: " + amount + ", Type: " + type);
+        System.out.println("[Budget] Amount: " + getAmount() + ", Type: " + type);
     }
 }

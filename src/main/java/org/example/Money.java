@@ -1,16 +1,25 @@
 package org.example;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 
 
-import java.util.*;
+abstract class Money {
+    private final String category;
+    private double amount;
 
-interface Money {
-    String getCategory();
-    double getAmount();
-    void display();
+    Money(String category, double amount) {
+        this.category = category;
+        this.amount = amount;
+    }
+    void setAmount(double amount){
+        this.amount = amount;
+    };
+    String getCategory(){
+        return category;
+    };
+    double getAmount(){
+        return amount;
+    };
+    abstract void display();
 }
