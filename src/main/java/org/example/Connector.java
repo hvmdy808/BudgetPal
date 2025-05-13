@@ -13,7 +13,7 @@ public class Connector {
     private static final String SENDER_EMAIL = "hamdymody901@gmail.com";
     private static final String SENDER_PASSWORD = "rfgc yyal qwet qakq"; // Use App Password if 2FA is on
 
-    public static boolean sendEmail(User user, String subject, String body) {
+    public static boolean sendEmail(String userEmail, String subject, String body) {
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
@@ -29,7 +29,7 @@ public class Connector {
         try {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(SENDER_EMAIL));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(user.getEmail()));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(userEmail));
             message.setSubject(subject);
             message.setText(body);
 

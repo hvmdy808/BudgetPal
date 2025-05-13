@@ -15,7 +15,7 @@ import java.util.*;
 
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         System.out.println("Welcome to BudgetPal");
         Manager manager = new Manager();
         while(true){
@@ -65,7 +65,7 @@ public class Main {
                             String code = Connector.generateVerificationCode();
                             String subject = "Email Verification Code";
                             String body = "Your verification code is: " + code + "\n\nEnter this code to verify your email address.";
-                            if(Connector.sendEmail(newUser, subject, body)){
+                            if(Connector.sendEmail(newUser.getEmail(), subject, body)){
                                 System.out.println("Please check your email for verification code");
                                 System.out.println("Enter your verification code: ");
                                 Scanner scan = new Scanner(System.in);
@@ -96,7 +96,7 @@ public class Main {
         }
     }
 
-    public static void showMenu(User user, Manager manager) {
+    public static void showMenu(User user, Manager manager) throws Exception{
         Scanner sc = new Scanner(System.in);
 
         while (true) {
@@ -116,8 +116,6 @@ public class Main {
             sc.nextLine(); // consume the newline
 
             double amount;
-            String type, source;
-            LocalDate date;
             LocalDateTime dateTime;
 
             if (choice == 1) {
@@ -145,14 +143,42 @@ public class Main {
                 user.showAllIncomes();
 
             } else if (choice == 6) {
-                System.out.print("Enter today's date (YYYY-MM-DD): ");
-
-                System.out.println("Reminder feature is currently disabled in this version.");
+                for(Money mo: user.getMoneyFlow()){
+                    if(mo instanceof Expense){
+                        Expense exp = (Expense)mo;
+                        exp.display();
+                    }
+                }
 
             } else if (choice == 7) {
                 dateTime = Manager.readDateTimeFromUser("Set reminder date (YYYY-MM-DDTHH:MM): ");
                 user.setReminderDate(dateTime);
-                System.out.println("Reminder date set!");
+                System.out.print("Enter expense description: ");
+                String expenseDescription = sc.nextLine().toLowerCase().trim();
+                boolean foundExp = false;
+                for (Money m: user.getMoneyFlow()){
+                    if(m instanceof Expense){
+                        Expense exp = (Expense)m;
+                        if(exp.getType().equalsIgnoreCase(expenseDescription)){
+                            System.out.println("Found expense");
+                            foundExp = true;
+                        }
+                    }
+                }
+                if(!foundExp){
+                    System.out.println("Not found expense");
+                }else{
+                    try {
+                        if (dateTime.isBefore(LocalDateTime.now())) {
+                            System.out.println("Error: The reminder date/time must be in the future.");
+                        }else{
+                            manager.scheduleReminder(user.getEmail(), expenseDescription, dateTime);
+                            System.out.println("Reminder date set!");
+                        }
+                    }catch (Exception e) {
+                        System.out.println("Error: " + e.getMessage());
+                    }
+                }
 
             } else if (choice == 8) {
                 user.showSummary();

@@ -7,6 +7,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import jakarta.mail.*;
+import jakarta.mail.internet.*;
+import org.quartz.*;
+import org.quartz.impl.StdSchedulerFactory;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.Properties;
+import java.util.Scanner;
+
 public class Manager {
     private Connector connector;
     private JSONDealer dealer;
@@ -223,7 +234,7 @@ public class Manager {
         String verificationCode = Connector.generateVerificationCode();
         String subject = "Password reset";
         String body = "Your password reset code is: " + verificationCode + "\n\nUse this code to reset your password.";
-        boolean emailSent = Connector.sendEmail(user, subject, body);
+        boolean emailSent = Connector.sendEmail(user.getEmail(), subject, body);
 
         if (!emailSent) {
             throw new RuntimeException("Failed to send password reset email");
@@ -242,20 +253,52 @@ public class Manager {
             System.out.println("Invalid verification code");
         }
     }
-    
 
 
-    public void sendReminder(User user) {
-        if (user == null || user.getReminderDate() == null) {
-            return;
-        }
-
-        LocalDateTime reminderDate = user.getReminderDate();
-        System.out.println("\n=== Reminder for " + user.getName() + " on " + reminderDate + " ===");
-
-        // Using connector to send actual reminders (email, SMS, etc.)
-        if (connector != null) {
-            // connector.sendNotification(user.getEmail(), "Reminder", "You have expenses due today");
+    public static class SendEmailJob implements Job {
+        @Override
+        public void execute(JobExecutionContext context) {
+            String userEmail = context.getJobDetail().getJobDataMap().getString("email");
+            String expenseDescription = context.getJobDetail().getJobDataMap().getString("description");
+            Connector.sendEmail(userEmail, "Expense Reminder", "Reminder: Your expense \"" + expenseDescription + "\" is due now.");
         }
     }
+
+
+    public void scheduleReminder(String userEmail, String expenseDescription, LocalDateTime userInputDateTime) throws SchedulerException {
+        Date remindDate = Date.from(userInputDateTime.atZone(ZoneId.of("Africa/Cairo")).toInstant());
+
+        JobDetail job = JobBuilder.newJob(SendEmailJob.class)
+                .withIdentity("reminderJob", "reminderGroup")
+                .usingJobData("email", userEmail)
+                .usingJobData("description", expenseDescription)
+                .build();
+
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .withIdentity("reminderTrigger", "reminderGroup")
+                .startAt(remindDate)
+                .build();
+
+        Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+        scheduler.start();
+        scheduler.scheduleJob(job, trigger);
+
+        System.out.println("Reminder scheduled for " + remindDate);
+    }
+
+
+
+
+//        if (user == null || user.getReminderDate() == null) {
+//            return;
+//        }
+//
+//        LocalDateTime reminderDate = user.getReminderDate();
+//        System.out.println("\n=== Reminder for " + user.getName() + " on " + reminderDate + " ===");
+//
+//        // Using connector to send actual reminders (email, SMS, etc.)
+//        if (connector != null) {
+//            // connector.sendNotification(user.getEmail(), "Reminder", "You have expenses due today");
+//        }
+
 }
