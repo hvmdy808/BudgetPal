@@ -155,19 +155,6 @@ public class Main {
                 user.setReminderDate(dateTime);
                 System.out.print("Enter expense description: ");
                 String expenseDescription = sc.nextLine().toLowerCase().trim();
-                boolean foundExp = false;
-                for (Money m: user.getMoneyFlow()){
-                    if(m instanceof Expense){
-                        Expense exp = (Expense)m;
-                        if(exp.getType().equalsIgnoreCase(expenseDescription)){
-                            System.out.println("Found expense");
-                            foundExp = true;
-                        }
-                    }
-                }
-                if(!foundExp){
-                    System.out.println("Not found expense");
-                }else{
                     try {
                         if (dateTime.isBefore(LocalDateTime.now())) {
                             System.out.println("Error: The reminder date/time must be in the future.");
@@ -178,7 +165,6 @@ public class Main {
                     }catch (Exception e) {
                         System.out.println("Error: " + e.getMessage());
                     }
-                }
 
             } else if (choice == 8) {
                 user.showSummary();
